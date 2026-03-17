@@ -32,7 +32,7 @@ class TestFetcherRequestInterceptor implements RequestInterceptor {
       [X_WAREHOUSE_ID]: 'mydao-SH',
       [COSEC_APP_ID]: 'pms',
       Authorization:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwVkRXd0hMVDAwUkYxS0giLCJzdWIiOiIzaEgiLCJpYXQiOjE3NzMyMDM3NjIsImV4cCI6MTc3MzQ2Mjk2MiwiYXR0cmlidXRlcyI6eyJpc093bmVyIjoiZmFsc2UiLCJhcHBJZCI6InBtcyIsImRlcGFydG1lbnRzIjpbXSwiYXV0aGVudGljYXRlSWQiOiIwVkRXd0hMNDAwUkYxS0MifSwidGVuYW50SWQiOiJteWRhbyJ9.UCvDyyIpZ_EbL0ZyjewlgEGoc_LjWuEw2t1TXnE0B10',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIwVkR6ZlZ6TDAwQkYxQVEiLCJzdWIiOiIzaEgiLCJpYXQiOjE3NzM2MjgyODAsImV4cCI6MTc3Mzg4NzQ4MCwiYXR0cmlidXRlcyI6eyJpc093bmVyIjoiZmFsc2UiLCJhcHBJZCI6InBtcyIsImRlcGFydG1lbnRzIjpbXSwiYXV0aGVudGljYXRlSWQiOiIwVkNWcEkyRjAwZEMwS2MifSwidGVuYW50SWQiOiJteWRhbyJ9.Chz1AHYauPI3IJuzxTfHENcJxwCV3fTSW3MPX4WFXMU',
     };
 
     exchange.request.url = exchange.request.url.replace('{tenantId}', 'mydao');
