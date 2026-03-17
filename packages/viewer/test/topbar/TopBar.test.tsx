@@ -37,6 +37,10 @@ vi.mock('@ahoo-wang/fetcher-react', () => ({
     exit: vi.fn().mockResolvedValue(undefined),
     getTarget: vi.fn().mockReturnValue(document.documentElement),
   })),
+  useKeyStorage: vi.fn(() => [
+    undefined,
+    vi.fn(),
+  ]),
 }));
 
 vi.mock('../../src/viewer/panel/SaveViewModal', () => ({

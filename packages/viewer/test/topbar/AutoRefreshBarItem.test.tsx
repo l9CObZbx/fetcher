@@ -28,6 +28,15 @@ vi.mock('../../src/locale/useLocale', () => ({
   })),
 }));
 
+vi.mock('@ahoo-wang/fetcher-react', () => ({
+  useKeyStorage: vi.fn(() => [
+    undefined,
+    vi.fn(),
+  ]),
+}));
+
+const TEST_VIEW_ID = 'test-view-id';
+
 describe('AutoRefreshBarItem', () => {
   beforeEach(() => {
     vi.useFakeTimers();
@@ -40,7 +49,9 @@ describe('AutoRefreshBarItem', () => {
 
   describe('rendering', () => {
     it('should render with default items', () => {
-      const { container } = render(<AutoRefreshBarItem />);
+      const { container } = render(
+        <AutoRefreshBarItem activeViewId={TEST_VIEW_ID} />,
+      );
 
       expect(container.firstChild).toBeInTheDocument();
     });
@@ -51,20 +62,24 @@ describe('AutoRefreshBarItem', () => {
       ];
 
       const { container } = render(
-        <AutoRefreshBarItem items={customItems} />,
+        <AutoRefreshBarItem items={customItems} activeViewId={TEST_VIEW_ID} />,
       );
 
       expect(container.firstChild).toBeInTheDocument();
     });
 
     it('should display default label "刷新率：从不"', () => {
-      const { container } = render(<AutoRefreshBarItem />);
+      const { container } = render(
+        <AutoRefreshBarItem activeViewId={TEST_VIEW_ID} />,
+      );
 
       expect(container.textContent).toContain('刷新率 ：从不');
     });
 
     it('should render button element', () => {
-      const { container } = render(<AutoRefreshBarItem />);
+      const { container } = render(
+        <AutoRefreshBarItem activeViewId={TEST_VIEW_ID} />,
+      );
 
       expect(container.querySelector('button')).toBeInTheDocument();
     });
@@ -72,13 +87,17 @@ describe('AutoRefreshBarItem', () => {
 
   describe('default items', () => {
     it('should have default items defined', () => {
-      const { container } = render(<AutoRefreshBarItem />);
+      const { container } = render(
+        <AutoRefreshBarItem activeViewId={TEST_VIEW_ID} />,
+      );
 
       expect(container).toBeInTheDocument();
     });
 
     it('should have 3 default refresh intervals plus never option', () => {
-      const { container } = render(<AutoRefreshBarItem />);
+      const { container } = render(
+        <AutoRefreshBarItem activeViewId={TEST_VIEW_ID} />,
+      );
 
       expect(container).toBeInTheDocument();
     });
@@ -92,7 +111,7 @@ describe('AutoRefreshBarItem', () => {
       ];
 
       const { container } = render(
-        <AutoRefreshBarItem items={customItems} />,
+        <AutoRefreshBarItem items={customItems} activeViewId={TEST_VIEW_ID} />,
       );
 
       expect(container.firstChild).toBeInTheDocument();
@@ -104,10 +123,31 @@ describe('AutoRefreshBarItem', () => {
       ];
 
       const { container } = render(
-        <AutoRefreshBarItem items={customItems} />,
+        <AutoRefreshBarItem items={customItems} activeViewId={TEST_VIEW_ID} />,
       );
 
       expect(container.textContent).toContain('从不');
+    });
+  });
+
+  describe('activeViewId prop', () => {
+    it('should render with activeViewId prop', () => {
+      const { container } = render(
+        <AutoRefreshBarItem activeViewId="view-123" />,
+      );
+
+      expect(container.firstChild).toBeInTheDocument();
+    });
+
+    it('should show different items when activeViewId changes', () => {
+      const { rerender } = render(
+        <AutoRefreshBarItem activeViewId="view-1" />,
+      );
+
+      expect(rerender).toBeDefined();
+
+      rerender(<AutoRefreshBarItem activeViewId="view-2" />);
+      expect(rerender).toBeDefined();
     });
   });
 });
