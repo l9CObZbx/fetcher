@@ -7,15 +7,7 @@ import {
   ViewType,
 } from '../';
 import styles from './TopBar.module.css';
-import {
-  Button,
-  Divider,
-  Dropdown,
-  Flex,
-  MenuProps,
-  Space,
-  Modal,
-} from 'antd';
+import { Button, Divider, Dropdown, Flex, MenuProps, Space, Modal } from 'antd';
 import {
   DownOutlined,
   ExclamationCircleOutlined,
@@ -253,7 +245,7 @@ export function TopBar<RecordType>(props: TopBarProps<RecordType>) {
           <ShareLinkBarItem />
           <FullscreenBarItem target={fullscreenTarget} />
           <Divider orientation="vertical" />
-          <AutoRefreshBarItem />
+          <AutoRefreshBarItem activeViewId={activeView.id} />
           {batchActions?.enabled && (
             <>
               <Divider orientation="vertical" />
