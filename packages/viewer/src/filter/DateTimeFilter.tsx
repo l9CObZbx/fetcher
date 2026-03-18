@@ -23,6 +23,19 @@ import { DatePicker, InputNumber } from 'antd';
 import { Optional } from '../types';
 import dayjs, { Dayjs, isDayjs } from 'dayjs';
 import { ExtendedOperator, SelectOperator } from './operator';
+import advancedFormat from 'dayjs/plugin/advancedFormat';
+import localeData from 'dayjs/plugin/localeData';
+import weekday from 'dayjs/plugin/weekday';
+import weekOfYear from 'dayjs/plugin/weekOfYear';
+import weekYear from 'dayjs/plugin/weekYear';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+
+dayjs.extend(customParseFormat);
+dayjs.extend(advancedFormat);
+dayjs.extend(weekday);
+dayjs.extend(localeData);
+dayjs.extend(weekOfYear);
+dayjs.extend(weekYear);
 
 export const DATE_TIME_FILTER_NAME = 'datetime';
 const TIME_FORMAT = 'HH:mm:ss';
