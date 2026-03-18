@@ -81,6 +81,7 @@ describe('TopBar', () => {
     pageSize: 10,
     condition: {},
     internalCondition: {},
+    sorter: [],
   };
 
   const defaultViews: ViewState[] = [defaultActiveView];

@@ -8,7 +8,6 @@ import {
   useRefreshDataEventBus,
   TopbarActionsCapable,
   ViewerRef,
-  FilterPanelConditionCapableRef,
 } from '../';
 import {
   useViewerDefinition,
@@ -25,14 +24,20 @@ import {
   useMemo,
   useRef,
 } from 'react';
-import { CommandResult, Condition, FieldSort } from '@ahoo-wang/fetcher-wow';
+import {
+  CommandResult,
+  Condition,
+  FieldSort,
+  PagedQuery,
+} from '@ahoo-wang/fetcher-wow';
 import { fetcherRegistrar, TextResultExtractor } from '@ahoo-wang/fetcher';
 import { useKeyStorage } from '@ahoo-wang/fetcher-react';
 import { KeyStorage } from '@ahoo-wang/fetcher-storage';
 
-export interface FetcherViewerRef extends FilterPanelConditionCapableRef {
+export interface FetcherViewerRef {
   refreshData: () => void;
   clearSelectedRowKeys: () => void;
+  getPageQuery: () => PagedQuery | undefined;
 }
 
 export interface FetcherViewerProps<RecordType>
@@ -108,6 +113,7 @@ export function FetcherViewer<RecordType = any>({
     loading: fetchLoading,
     setQuery,
     reload,
+    getPageQuery,
   } = useFetchData<RecordType>({
     viewerDefinition,
     defaultView,
@@ -210,9 +216,7 @@ export function FetcherViewer<RecordType = any>({
     clearSelectedRowKeys: () => {
       viewerRef.current?.clearSelectedRowKeys();
     },
-    getCondition: () => {
-      return viewerRef.current?.getCondition();
-    },
+    getPageQuery: () => getPageQuery(),
   }));
 
   subscribe({
