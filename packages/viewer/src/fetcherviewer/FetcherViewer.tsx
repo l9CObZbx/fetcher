@@ -4,6 +4,7 @@ import {
   ViewTableSettingCapable,
   ViewTableActionColumn,
   ViewState,
+  ViewDefinition,
   Viewer,
   useRefreshDataEventBus,
   TopbarActionsCapable,
@@ -39,6 +40,7 @@ export interface FetcherViewerRef {
   clearSelectedRowKeys: () => void;
   getPageQuery: () => PagedQuery | undefined;
   getActiveView: () => ViewState | undefined;
+  getViewerDefinition: () => ViewDefinition | undefined;
 }
 
 export interface FetcherViewerProps<RecordType>
@@ -220,6 +222,8 @@ export function FetcherViewer<RecordType = any>({
     getPageQuery: () => getPageQuery(),
     // 暴露 getActiveView 方法让外部使用者可获取当前激活视图
     getActiveView: () => viewerRef.current?.getActiveView(),
+    // 暴露 getViewerDefinition 方法让外部使用者可获取当前视图定义
+    getViewerDefinition: () => viewerDefinition,
   }));
 
   subscribe({
