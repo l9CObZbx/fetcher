@@ -38,6 +38,7 @@ export interface FetcherViewerRef {
   refreshData: () => void;
   clearSelectedRowKeys: () => void;
   getPageQuery: () => PagedQuery | undefined;
+  getActiveView: () => ViewState | undefined;
 }
 
 export interface FetcherViewerProps<RecordType>
@@ -217,6 +218,8 @@ export function FetcherViewer<RecordType = any>({
       viewerRef.current?.clearSelectedRowKeys();
     },
     getPageQuery: () => getPageQuery(),
+    // 暴露 getActiveView 方法让外部使用者可获取当前激活视图
+    getActiveView: () => viewerRef.current?.getActiveView(),
   }));
 
   subscribe({

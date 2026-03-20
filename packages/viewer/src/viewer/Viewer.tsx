@@ -25,6 +25,7 @@ const { Header, Sider, Content } = Layout;
 
 export interface ViewerRef extends FilterPanelConditionCapableRef {
   clearSelectedRowKeys: () => void;
+  getActiveView: () => ViewState;
 }
 
 export interface ViewerProps<RecordType>
@@ -183,6 +184,7 @@ export function Viewer<RecordType = any>({
         viewRef.current?.clearSelectedRowKeys();
       },
       getCondition: () => viewRef.current?.getCondition(),
+      getActiveView: () => activeView,
     };
   });
 
