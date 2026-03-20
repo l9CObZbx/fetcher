@@ -188,6 +188,13 @@ const FetcherViewerWithRefMethodsWrapper = (args: any) => {
     alert(`Active view: ${JSON.stringify(activeView)}`);
   };
 
+  const handleGetViewerDefinition = () => {
+    console.log('Getting viewer definition...');
+    const viewerDefinition = viewerRef.current?.getViewerDefinition();
+    console.log('Viewer definition:', viewerDefinition);
+    alert(`Viewer definition: ${JSON.stringify(viewerDefinition)}`);
+  };
+
   return (
     <Space direction="vertical" style={{ width: '100%' }} size="middle">
       <Space>
@@ -197,6 +204,9 @@ const FetcherViewerWithRefMethodsWrapper = (args: any) => {
         <Button onClick={handleClearSelection}>Clear Selection</Button>
         <Button onClick={handleGetPageQuery}>Get Page Query</Button>
         <Button onClick={handleGetActiveView}>Get Active View</Button>
+        <Button onClick={handleGetViewerDefinition}>
+          Get Viewer Definition
+        </Button>
       </Space>
       <FetcherViewer ref={viewerRef} {...args} />
     </Space>
