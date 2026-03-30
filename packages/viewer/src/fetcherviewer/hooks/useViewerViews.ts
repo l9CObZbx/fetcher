@@ -12,6 +12,7 @@ export interface UseViewerViewsResult {
   views: ViewState[] | undefined;
   loading: boolean;
   error: Error | undefined;
+  execute: () => void;
 }
 
 export function useViewerViews(
@@ -23,6 +24,7 @@ export function useViewerViews(
     loading,
     result: views,
     error,
+    execute
   } = useFetcherListQuery<ViewState>({
     url: '/viewer/view/snapshot/list/state',
     initialQuery: listQuery({
@@ -37,5 +39,5 @@ export function useViewerViews(
     autoExecute: true,
   });
 
-  return { views, loading, error };
+  return { views, loading, error, execute };
 }
