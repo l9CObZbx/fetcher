@@ -107,7 +107,7 @@ export function FetcherViewer<RecordType = any>({
     error: definitionError,
   } = useViewerDefinition(viewerDefinitionId);
 
-  const { views, loading: viewsLoading } = useViewerViews(
+  const { views, loading: viewsLoading, execute: loadViews } = useViewerViews(
     viewerDefinitionId,
     tenantId,
     ownerId,
@@ -203,9 +203,10 @@ export function FetcherViewer<RecordType = any>({
             id: result.aggregateId,
           };
           onSuccess?.(newView);
+          loadViews()
         });
     },
-    [],
+    [loadViews],
   );
 
   const handleUpdateView = useCallback(
@@ -218,10 +219,11 @@ export function FetcherViewer<RecordType = any>({
           body: command,
         })
         .then(() => {
+          loadViews()
           onSuccess?.(view);
         });
     },
-    [],
+    [loadViews],
   );
 
   const handleDeleteView = useCallback(
@@ -231,10 +233,11 @@ export function FetcherViewer<RecordType = any>({
           body: {},
         })
         .then(() => {
+          loadViews()
           onSuccess?.(view);
         });
     },
-    [],
+    [loadViews],
   );
 
   const { publish, subscribe } = useRefreshDataEventBus(viewerDefinitionId);
