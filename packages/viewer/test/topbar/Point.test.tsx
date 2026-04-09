@@ -27,12 +27,10 @@ describe('Point', () => {
       const { container } = render(<Point />);
 
       const div = container.querySelector('div');
-      expect(div).toHaveStyle({
-        width: '4px',
-        height: '4px',
-        backgroundColor: '#D9D9D9',
-        borderRadius: '50%',
-      });
+      expect(div?.style.width).toBe('4px');
+      expect(div?.style.height).toBe('4px');
+      expect(div?.style.backgroundColor).toBe('rgb(217, 217, 217)');
+      expect(div?.style.borderRadius).toBe('50%');
     });
   });
 });
