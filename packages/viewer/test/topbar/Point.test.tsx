@@ -11,6 +11,7 @@
  * limitations under the License.
  */
 
+import '@testing-library/jest-dom';
 import { describe, expect, it } from 'vitest';
 import { render } from '@testing-library/react';
 import { Point } from '../../src/topbar/Point';
