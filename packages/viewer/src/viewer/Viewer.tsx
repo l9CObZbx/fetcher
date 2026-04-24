@@ -1,30 +1,27 @@
-import type { PaginationProps} from 'antd';
+import type { PaginationProps } from 'antd';
 import { Layout, Space } from 'antd';
 import type {
   ViewState,
   ViewDefinition,
   ViewMutationActionsCapable,
   TopbarActionsCapable,
-  GetRecordCountActionCapable} from './';
-import {
-  ViewPanel,
-  useViewerState
+  GetRecordCountActionCapable,
 } from './';
+import { ViewPanel, useViewerState } from './';
 import styles from './Viewer.module.css';
 import type {
   ViewTableSettingCapable,
   ViewChangeAction,
   ViewRef,
   ViewTableActionColumn,
-  FilterPanelConditionCapableRef} from '../';
-import {
-  TopBar,
-  View
+  FilterPanelConditionCapableRef,
 } from '../';
-import type {
-  RefAttributes} from 'react';
+import { TopBar, View } from '../';
+import { dataMonitorService } from '@ahoo-wang/fetcher-react';
+import type { RefAttributes } from 'react';
 import {
   useCallback,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -201,6 +198,10 @@ export function Viewer<RecordType = any>({
     };
   });
 
+  useEffect(() => {
+    dataMonitorService.initialize();
+  }, []);
+
   return (
     <Layout ref={viewerRef}>
       {showViewPanel && (
@@ -248,6 +249,16 @@ export function Viewer<RecordType = any>({
                 onUpdateView={handleUpdateView}
                 onDeleteView={handleDeleteView}
                 fullscreenTarget={fullscreenTarget}
+                dataMonitorProps={{
+                  viewId: activeView.id,
+                  countUrl: definition.countUrl,
+                  viewName: activeView.name,
+                  condition,
+                  notification: {
+                    title: `视图[${activeView.name}]的数据已发生变化，请查看`,
+                    navigationUrl: window.location.pathname,
+                  },
+                }}
               />
             </Header>
             <View<RecordType>
