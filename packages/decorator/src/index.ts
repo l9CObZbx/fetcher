@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 export * from './apiDecorator';
 export * from './endpointDecorator';
 export * from './endpointReturnTypeCapable';
