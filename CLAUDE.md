@@ -2,19 +2,11 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Overview
+## Project Overview
 
-Fetcher is a monorepo containing a modern HTTP client library ecosystem built on the native Fetch API. It provides an Axios-like experience with powerful features including interceptors, timeout control, and native LLM streaming API support.
+Fetcher is a modular HTTP client ecosystem built on the native Fetch API. It provides an Axios-like experience with interceptor-powered middleware, TypeScript-first design, and native LLM streaming API support. Published as an npm monorepo under `@ahoo-wang/*`.
 
-## Tech Stack
-
-- **Package Manager**: pnpm (workspace-based monorepo)
-- **Build Tool**: Vite
-- **Testing**: Vitest with coverage
-- **Language**: TypeScript (strict mode)
-- **Linting**: ESLint with Prettier
-
-## Commands
+## Build & Development Commands
 
 ```bash
 # Install dependencies
@@ -23,14 +15,18 @@ pnpm install
 # Build all packages
 pnpm build
 
-# Run all tests
-pnpm test
-
-# Run unit tests only (packages/*)
+# Run unit tests (all packages)
 pnpm test:unit
 
 # Run integration tests
 pnpm test:it
+
+# Run tests for a single package
+pnpm --filter @ahoo-wang/fetcher test
+pnpm --filter @ahoo-wang/fetcher-viewer test
+
+# Run a single test file
+pnpm --filter @ahoo-wang/fetcher vitest run src/fetcher.test.ts
 
 # Lint all packages
 pnpm lint
@@ -38,60 +34,103 @@ pnpm lint
 # Format code
 pnpm format
 
-# Clean build artifacts
+# Clean all build artifacts
 pnpm clean
 
-# Run Storybook
+# Storybook (for viewer/react components)
 pnpm storybook
 
-# Build Storybook docs
-pnpm build-storybook
-
-# Update all package versions
-pnpm update-version <new-version>
+# Update version across all packages
+pnpm update-version <version>
 ```
 
-## Package Architecture
+Each package also supports its own scripts directly: `pnpm --filter <package-name> <script>`.
 
-The ecosystem is built on the core `fetcher` package with modular extensions. The core extension mechanism is the **interceptor system** - request/response interceptors with ordered execution that can transform exchanges or handle errors.
+## Monorepo Structure
 
-### Core
-- **`packages/fetcher`** - Ultra-lightweight (3KB) HTTP client with interceptors, timeout, path/query parameters
+pnpm workspaces monorepo with 12 packages in `packages/` plus `integration-test/`. Dependency versions are centralized via the `catalog:` protocol in `pnpm-workspace.yaml`.
 
-### Extensions (interceptor-based)
-- **`packages/decorator`** - TypeScript decorators for declarative API service definitions, uses `NamedFetcher` registry
-- **`packages/eventstream`** - Adds `eventStream()` and `jsonEventStream()` methods to responses via `EventStreamInterceptor`
-- **`packages/eventbus`** - Event bus with serial/parallel execution and cross-tab broadcasting
-- **`packages/openai`** - Type-safe OpenAI API client with streaming support
-- **`packages/storage`** - Cross-environment storage (localStorage/sessionStorage/in-memory)
-- **`packages/react`** - React hooks for data fetching and state management
+### Package Dependency Graph
 
-### Framework Integrations
-- **`packages/wow`** - First-class support for Wow CQRS/DDD framework (commands, queries, aggregates)
-- **`packages/cosec`** - Adds `CoSecInterceptor` for automatic authentication and token refresh
+```
+openapi (standalone types, no deps)
+  |
+fetcher (core HTTP client, no internal deps)
+  |
+  +-- decorator  (depends on fetcher, uses reflect-metadata)
+  +-- eventbus   (depends on fetcher)
+  +-- eventstream (depends on fetcher, adds SSE/LLM streaming via side-effect import)
+  |
+  +-- openai  (depends on fetcher + eventstream + decorator)
+  +-- wow     (depends on fetcher + eventstream + decorator)
+  +-- storage (depends on eventbus)
+  +-- cosec   (depends on fetcher + eventbus + storage)
+  |
+  +-- react    (depends on fetcher + eventstream + eventbus + storage + wow + cosec)
+  +-- viewer   (depends on all above + antd + @ant-design/icons)
+  +-- generator (depends on fetcher + eventstream + decorator + openapi + wow)
+```
 
-### Code Generation
-- **`packages/generator`** - CLI tool that generates type-safe TypeScript clients from OpenAPI 3.0+ specs, with specialized support for Wow CQRS patterns
-- **`packages/openapi`** - TypeScript type definitions for OpenAPI 3.0+ specifications (used by generator)
+### Package Build Config
 
-### UI Components
-- **`packages/viewer`** - Table, filter, and view components for data display
+All packages use Vite for building with `unplugin-dts` for type declarations. Each package outputs:
+- ESM: `dist/index.es.js`
+- UMD: `dist/index.umd.js`
+- Types: `dist/index.d.ts`
 
-## Dependency Management
+Packages with React (viewer, react) also use `@vitejs/plugin-react` with React Compiler and `@babel/plugin-proposal-decorators` (legacy mode).
 
-Shared dependencies are managed via `pnpm-workspace.yaml` catalog entries. When adding dependencies, use `catalog:` instead of version numbers to ensure consistency across the monorepo.
+### Testing
 
-## Key Patterns
+- **Unit tests**: Vitest with `@vitest/coverage-v8` for coverage
+- **Browser tests**: `@vitest/browser` with Playwright (viewer package)
+- **Integration tests**: Separate `integration-test` workspace with real API calls
+- **MSW**: Used for HTTP mocking in unit tests (fetcher package)
+- Test files follow `*.test.ts` / `*.test.tsx` naming convention alongside source files
 
-**Named Fetcher Registry**: The decorator package uses a static registry to map fetcher names to instances. Register with `NamedFetcher.register(name, config)` and reference in `@api('/path', { fetcher: 'name' })`.
+## Architecture
 
-**Interceptor Order**: Interceptors execute in ascending `order` value (lower = runs first). Use this to chain middleware like auth → logging → actual request.
+### Core (`packages/fetcher`)
 
-## Testing
+The foundation HTTP client. Key concepts:
+- **Fetcher**: Main client class wrapping native Fetch with baseURL, timeout, and interceptors
+- **NamedFetcher**: Named registry pattern for managing multiple fetcher instances
+- **FetcherRegistrar**: Registry for named fetchers, used by decorator and other packages
+- **Interceptor system**: Ordered request/response/error interceptors via `InterceptorManager`
+- **UrlBuilder**: Handles path parameter templates (`{id}` / `:id`) and query parameters
 
-Tests use Vitest with coverage enabled. Each package has its own `test/` directory. Integration tests live in `integration-test/`.
+### Decorator (`packages/decorator`)
 
-- **API Mocking**: Tests use MSW (Mock Service Worker) to intercept fetch requests at the network level
-- **Browser Testing**: Some packages test in browser environments using `@vitest/browser` with Playwright
-- **Run unit tests**: `pnpm test:unit` (packages only, excludes integration tests)
-- **Run single test file**: `pnpm vitest run packages/fetcher/test/fetcher.test.ts`
+Uses `reflect-metadata` to create declarative API service classes:
+- `@api(basePath, options)` - class-level decorator for service definition
+- `@get/@post/@put/@delete/@patch` - method decorators for HTTP verbs
+- `@path/@query/@header/@body` - parameter decorators for argument binding
+- Methods are auto-implemented; throw `autoGeneratedError()` as placeholder
+
+### EventStream (`packages/eventstream`)
+
+**Side-effect module** - importing `@ahoo-wang/fetcher-eventstream` patches `Response.prototype` with `eventStream()` and `jsonEventStream()` methods. This is the mechanism for SSE/LLM streaming support.
+
+### Generator (`packages/generator`)
+
+CLI tool (`fetcher-generator`) that reads OpenAPI 3.x specs (JSON/YAML/URL) and generates:
+- TypeScript interfaces/enums from schemas
+- Decorator-based API client classes
+- Wow CQRS-specific clients (command/event-stream)
+- Uses `ts-morph` for code generation, `commander` for CLI, `yaml` for YAML parsing
+
+### Viewer (`packages/viewer`)
+
+React + Ant Design component library for API documentation viewing:
+- Filter panel components, table components with cell renderers
+- Uses React Compiler (`babel-plugin-react-compiler`)
+- Less for styling (Ant Design integration)
+
+## Code Style
+
+- **TypeScript strict mode** enabled across all packages
+- **Prettier** config: single quotes, trailing commas, semicolons, 80 char width, no arrow parens
+- **ESLint**: `@typescript-eslint/no-explicit-any` is OFF
+- **ES modules**: `"type": "module"` throughout
+- All source files have Apache 2.0 license headers
+- Chinese READMEs (`README.zh-CN.md`) maintained alongside English ones
