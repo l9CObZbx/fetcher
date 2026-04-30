@@ -71,10 +71,12 @@ export default defineConfig({
       outDirs: 'dist',
       tsconfigPath: './tsconfig.json',
     }),
-    react(),
     babel({
       plugins: [
+        'babel-plugin-transform-typescript-metadata',
+        '@babel/plugin-transform-class-static-block',
         ["@babel/plugin-proposal-decorators", { version: "legacy" }],
+        ["@babel/plugin-proposal-class-properties", { loose: true }],
       ],
       presets: [reactCompilerPreset()],
     })
