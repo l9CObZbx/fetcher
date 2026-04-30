@@ -71,6 +71,7 @@ export default defineConfig({
       outDirs: 'dist',
       tsconfigPath: './tsconfig.json',
     }),
+    react(),
     babel({
       plugins: [
         'babel-plugin-transform-typescript-metadata',
